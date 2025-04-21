@@ -140,3 +140,122 @@ Logs out the authenticated user by blacklisting the current JWT token and cleari
 |-------------|----------------------------|--------------------------------------------|
 | 200         | Logout successful          | `{ "message": "Logged out successfully" }` |
 | 401         | Unauthorized (no/invalid token) | `{ "message": "Unauthorized" }`       |
+
+
+
+
+# Captain API Documentation
+
+## 1. Register Captain
+
+**Endpoint:**  
+`POST /captains/register`
+
+**Description:**  
+Registers a new captain (driver) with personal and vehicle details. Returns a JWT token and the created captain object.
+
+**Request Body:**
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com",
+  "password": "yourpassword",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+**Field Requirements:**
+- `fullname.firstname` (string, required): Minimum 3 characters.
+- `fullname.lastname` (string, required): Minimum 3 characters.
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+- `vehicle.color` (string, required): Minimum 3 characters.
+- `vehicle.plate` (string, required): Minimum 3 characters.
+- `vehicle.capacity` (number, required): Must be a number.
+- `vehicle.vehicleType` (string, required): Must be one of `"car"`, `"bike"`, or `"auto"`.
+
+**Responses:**
+
+| Status | Description                        | Example Body                                      |
+|--------|------------------------------------|---------------------------------------------------|
+| 201    | Captain registered successfully    | `{ "token": "...", "captain": { ... } }`          |
+| 400    | Validation or duplicate error      | `{ "errors": [ ... ] }` or `{ "message": "Captain already exist" }` |
+
+---
+
+## 2. Login Captain
+
+**Endpoint:**  
+`POST /captains/login`
+
+**Description:**  
+Authenticates a captain using email and password. Returns a JWT token and the captain object.
+
+**Request Body:**
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "yourpassword"
+}
+```
+
+**Field Requirements:**
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+
+**Responses:**
+
+| Status | Description                        | Example Body                                      |
+|--------|------------------------------------|---------------------------------------------------|
+| 200    | Login successful                   | `{ "token": "...", "captain": { ... } }`          |
+| 400    | Validation or authentication error | `{ "errors": [ ... ] }` or `{ "message": "Invalid email or password" }` |
+
+---
+
+## 3. Get Captain Profile
+
+**Endpoint:**  
+`GET /captains/profile`
+
+**Description:**  
+Returns the authenticated captain's profile. Requires a valid JWT token in the `Authorization` header as `Bearer <token>` or in the `token` cookie.
+
+**Authentication:**  
+- Header: `Authorization: Bearer <token>`
+- or Cookie: `token=<token>`
+
+**Responses:**
+
+| Status | Description                        | Example Body                                      |
+|--------|------------------------------------|---------------------------------------------------|
+| 200    | Success                            | `{ "captain": { ... } }`                          |
+| 401    | Unauthorized                       | `{ "message": "Unauthorized" }`                   |
+
+---
+
+## 4. Logout Captain
+
+**Endpoint:**  
+`GET /captains/logout`
+
+**Description:**  
+Logs out the authenticated captain by blacklisting the current JWT token and clearing the authentication cookie.
+
+**Authentication:**  
+- Header: `Authorization: Bearer <token>`
+- or Cookie: `token=<token>`
+
+**Responses:**
+
+| Status | Description                        | Example Body                                      |
+|--------|------------------------------------|---------------------------------------------------|
+| 200    | Logout successful                  | `{ "message": "Logout successful" }`              |
+| 401    | Unauthorized                       | `{ "message": "Unauthorized" }`                   |
